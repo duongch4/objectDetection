@@ -10,24 +10,26 @@ import glob
 import os
 
 # Import config.py
-from config import *
+import config
 
 #--------------------Helper--------------------------
 
-def getHog(samplePath, featurePath):
+def getHog(samplePath, featurePath, descriptorType):
 	for imPath in glob.glob(os.path.join(samplePath, "*")):
 		im = imread(imPath, as_grey = True)
 
-		if desType == "HOG":
-			featDes = hog(im, orientations, pixels_per_cell, cells_per_block)
+		if descriptorType == "HOG":
+			featDes = hog(im, config.orientations,
+				          config.pixels_per_cell, config.cells_per_block,
+						  block_norm = "L2-Hys")
 		
 		featDesName = os.path.split(imPath)[1].split(".")[0] + ".feat"
 		featDesPath = os.path.join(featurePath, featDesName)
 		joblib.dump(featDes, featDesPath)
 
-#--------------------Main----------------------------
+#--------------------MainHog-------------------------
 
-def main():
+def mainHog():
 	# Argument Parser
 	parser = argparse.ArgumentParser()
 
@@ -42,22 +44,22 @@ def main():
 	desType = args["descriptor"]
 
 	# If feature dir dont exist, create them
-	if not os.path.isdir(posFeatPath):
+	if not os.path.isdir(config.posFeatPath):
 		print("Create pos feature dir")
-		os.makedirs(posFeatPath)
+		os.makedirs(config.posFeatPath)
 
-	if not os.path.isdir(negFeatPath):
+	if not os.path.isdir(config.negFeatPath):
 		print("Create neg feature dir")
-		os.makedirs(negFeatPath)
+		os.makedirs(config.negFeatPath)
 
-	print("Descriptors: positive samples: processing...")
-	getHog(posPath, posFeatPath)
-	print("Positive features saved in {}".format(posFeatPath))
+	print("Describing positive samples...")
+	getHog(posPath, config.posFeatPath, desType)
+	print("Positive features saved in {}".format(config.posFeatPath))
 
-	print("Descriptors: negative samples: processing...")
-	getHog(negPath, negFeatPath)
-	print("Negative features saved in {}".format(negFeatPath))
+	print("Describing negative samples...")
+	getHog(negPath, config.negFeatPath, desType)
+	print("Negative features saved in {}".format(config.negFeatPath))
 
-#----------------------------------------------------
+#----------------------Main--------------------------
 if __name__ == "__main__":
-	main()
+	mainHog()

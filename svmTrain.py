@@ -9,9 +9,9 @@ import glob
 import os
 
 # Import config.py
-from config import *
+import config
 
-#--------------------Helpers------------------------
+#--------------------Helper-------------------------
 
 def loadFeature(featurePath, featureArray, labelArray, intForLabel):
 	for featPath in glob.glob(os.path.join(featurePath, "*.feat")):
@@ -19,7 +19,7 @@ def loadFeature(featurePath, featureArray, labelArray, intForLabel):
 		featureArray.append(feature)
 		labelArray.append(intForLabel)
 
-#---------------------Train-------------------------
+#--------------------SVM-Train----------------------
 
 def svmTrain():
 	# Argument Parser
@@ -40,18 +40,24 @@ def svmTrain():
 	labels = []
 
 	# Load positive and negative features
-	loadFeature(posFeatPath, features, labels, 1)
-	loadFeature(negFeatPath, features, labels, 0)
+	print("Loading features...")
+	loadFeature(config.posFeatPath, features, labels, 1)
+	loadFeature(config.negFeatPath, features, labels, 0)
 
 	# Train
 	if classifierType is "LinSVM":
-		classifier = LinearSVC()
 		print("Training a linear SVM Classifier...")
+		
+		classifier = LinearSVC()
 		classifier.fit(features, labels)
 
 		# Create feature directories if not exist
-		if not os.path.isdir(os.path.split(modelPath)[0]):
-			os.makedirs(os.path.split(modelPath)[0])
+		if not os.path.isdir(os.path.split(config.modelPath)[0]):
+			os.makedirs(os.path.split(config.modelPath)[0])
 		
-		joblib.dump(classifier, modelPath)
-		print("Classifier saved to {}".format(modelPath))
+		joblib.dump(classifier, config.modelPath)
+		print("Classifier saved to {}".format(config.modelPath))
+
+#----------------------Main-------------------------
+if __name__ == "__main__":
+	svmTrain()
