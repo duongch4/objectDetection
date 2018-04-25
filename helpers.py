@@ -4,15 +4,19 @@ import imutils
 
 #----------------------------------------------------
 
-def getNonMaxSuppression_fast(boxes, overlapThreshold):
+def getNonMaxSuppression_fast(boxes, overlapThreshold = 0.3):
 	'''
 	Non-max suppression (fast method) based on Malisiewicz et al.
 	Input: 
-		1. boxes: Overlap boxes
-		2. overlapThreshold: Overlap threshold
+		1. boxes: Overlap boxes, defined by upper-left and lower-right points
+		2. overlapThreshold: Overlap threshold, default to 0.3
 	Output:
 		return only the relevant bounding boxes
 	'''
+
+	# If boxes is not a numpy.array, turn it into one
+	if ( type(boxes) is not np.ndarray ):
+		boxes = np.array(boxes)
 
 	# If no boxes, return an empty list
 	if len(boxes) == 0:
@@ -20,13 +24,13 @@ def getNonMaxSuppression_fast(boxes, overlapThreshold):
 
 	# If the coordinates are integers, convert them to floats
 	# => important because of divisions
-	if boxes.dtype.kind == "i":
+	if ( boxes.dtype.kind == "i" ):
 		boxes = boxes.astype("float")
 
 	# Initialise the list of picked indexes	
 	pick = []
 
-	# Get the coordinates of the bounding boxes, defined by upper-left and lower-right points
+	# Get the coordinates of the bounding boxes
 	upperLeft_x = boxes[:,0]
 	upperLeft_y = boxes[:,1]
 	lowerRight_x = boxes[:,2]
@@ -38,7 +42,7 @@ def getNonMaxSuppression_fast(boxes, overlapThreshold):
 	idxs = np.argsort(lowerRight_y)
 
 	# Keep looping while some indexes still remain in the indexes list
-	while len(idxs) > 0:
+	while ( len(idxs) > 0 ):
 		# Get the last index in the indexes list and
 		# Add the index value to the list of picked indexes
 		last_idx = len(idxs) - 1
@@ -62,7 +66,7 @@ def getNonMaxSuppression_fast(boxes, overlapThreshold):
 		# Get indices of values satisfying: > overlapThreshold
 		# Since overlap is a 1-d array, the return tuple has empty second element (ie no cols)
 		# => get the first element, ie array of row's indices of overlap
-		overlap_badIdxs = np.where(overlap > overlapThreshold)[0]
+		overlap_badIdxs = np.where(overlap >= overlapThreshold)[0]
 
 		# Since we already added last_idx to pick[], put it inside the to-be-deleted-array
 		del_tuple = ( [last_idx], overlap_badIdxs )
@@ -76,14 +80,16 @@ def getNonMaxSuppression_fast(boxes, overlapThreshold):
 
 #----------------------------------------------------
 
-def getSlidingWindow(image, windowSize, stepSize):
+def getSlidingWindow(image, stepSize, windowSize = (30,100)):
     '''
 	Get sliding window
 	Input:
 		1. image: Input Image
-		2. windowSize: Size of Sliding Window
-		3. stepSize: Incremented Size of Window
-			Index (0, 1) for (x-direction step, y-direction step)
+		2. stepSize: Incremented Size of Window
+			Index (0, 1) for (y-direction step, x-direction step)
+		3. windowSize: Size of Sliding Window, default to (30,100)
+			as: windowSize[0] = nrows = height, windowSize[1] = ncols = width
+
 	Output:
 		yield a sequence of patches (windows) of the input image of windowSize
 		The first window has upper-left co-ordinates (0, 0) 
@@ -95,19 +101,20 @@ def getSlidingWindow(image, windowSize, stepSize):
 			imWindow: the sliding window image
     '''
 
-    for y in range(0, image.shape[0], stepSize[1]):
-        for x in range(0, image.shape[1], stepSize[0]):
-            yield (x, y, image[ y:(y + windowSize[1]), x:(x + windowSize[0]) ])
+    for y in range(0, image.shape[0], stepSize[0]):
+        for x in range(0, image.shape[1], stepSize[1]):
+            yield (x, y, image[ y:(y + windowSize[0]), x:(x + windowSize[1]) ])
 
 #----------------------------------------------------
 
-def getImagePyramid(image, scale = 1.5, minSize = (30,30)):
+def getImagePyramid(image, scale = 1.5, minSize = (30,100)):
 	'''
 	Build an image pyramid
 	Input:
 		1. image: Input image
 		2. scale: scaling factor, default to 1.5
-		3. minSize: minimum size threshold, default to (30,30)
+		3. minSize: minimum size threshold, default to (30,100)
+			as: minSize[0] = nrows = height, minSize[1] = ncols = width
 	Output:
 		yield a sequense of images (this is a generator)
 	'''
