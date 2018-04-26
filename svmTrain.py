@@ -50,9 +50,6 @@ def svmTrain():
 		print("Training a linear SVM Classifier...")
 		
 		classifier = LinearSVC()
-		#features = np.array(features)
-		#data_frame = np.hstack( (features, labels) )
-
 		classifier.fit(features, labels)
 
 		# Create feature directories if not exist

@@ -21,6 +21,12 @@ transform_sqrt = config.getboolean("hog", "transform_sqrt")
 
 posTrainPath = config.get("paths", "posTrainPath")
 negTrainPath = config.get("paths", "negTrainPath")
+
 posFeatPath = config.get("paths", "posFeatPath")
 negFeatPath = config.get("paths", "negFeatPath")
 modelPath = config.get("paths", "modelPath")
+
+testPath = config.get("paths", "testPath")
+testScalePath = config.get("paths", "testScalePath")
+resultPath = config.get("paths", "resultPath")
+resultScalePath = config.get("paths", "resultScalePath")

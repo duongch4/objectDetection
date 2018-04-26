@@ -2,3 +2,5 @@
 .vs
 /data/features/
 /data/models/
+/results
+/results_scale
