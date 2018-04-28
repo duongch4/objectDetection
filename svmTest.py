@@ -56,23 +56,7 @@ def svmTest(imPath, visualise, isScale):
 	getNMS(image, boxes, visualise)
 	
 	# Save result
-	# If results directory not exist, create it
-	if ( not isScale and not os.path.isdir(config.resultPath) ):
-		print("Create single-scale results directory")
-		os.makedirs(config.resultPath)
-	
-	if ( isScale and not os.path.isdir(config.resultScalePath) ):
-		print("Create multi-scale results directory")
-		os.makedirs(config.resultScalePath)
-
-	imName = os.path.split(imPath)[1]
-	resultName = "result-" + re.split("\W", imName)[1] + ".png"
-	if (not isScale):
-		resultPath = os.path.join(config.resultPath, resultName)
-		cv2.imwrite(resultPath, image)
-	else:
-		resultPath = os.path.join(config.resultScalePath, resultName)
-		cv2.imwrite(resultPath, image)
+	saveResults(imPath, image, isScale)
 
 def getBoxes(grey, minWindowSize, model, boxes, visualise):
 	# Loop over image pyramid (downscale)
@@ -134,6 +118,25 @@ def getNMS(image, boxes, visualise):
 		cv2.imshow("Original image", imOrigin)
 		cv2.imshow("After NMS", image)
 		cv2.waitKey(0)
+
+def saveResults(imPath, image, isScale):
+	# If results directory not exist, create it
+	if ( not isScale and not os.path.isdir(config.resultPath) ):
+		print("Create single-scale results directory")
+		os.makedirs(config.resultPath)
+	
+	if ( isScale and not os.path.isdir(config.resultScalePath) ):
+		print("Create multi-scale results directory")
+		os.makedirs(config.resultScalePath)
+	
+	imName = os.path.split(imPath)[1]
+	resultName = "result-" + re.split("\W", imName)[1] + ".png"
+	if (not isScale):
+		resultPath = os.path.join(config.resultPath, resultName)
+		cv2.imwrite(resultPath, image)
+	else:
+		resultPath = os.path.join(config.resultScalePath, resultName)
+		cv2.imwrite(resultPath, image)
 
 #----------------------Main--------------------------
 if __name__ == "__main__":
