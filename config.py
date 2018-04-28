@@ -12,6 +12,8 @@ overlapThreshold = config.getfloat("helpers", "overlapThreshold")
 stepSize = json.loads(config.get("helpers", "stepSize"))
 scale = config.getfloat("helpers", "scale")
 pyramidMinSize = json.loads(config.get("helpers", "pyramidMinSize"))
+trainWindowSize = json.loads(config.get("helpers", "trainWindowSize"))
+posProbThreshold = config.getfloat("helpers", "posProbThreshold")
 
 orientations = config.getint("hog", "orientations")
 pixels_per_cell = json.loads(config.get("hog", "pixels_per_cell"))

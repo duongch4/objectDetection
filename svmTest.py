@@ -11,7 +11,7 @@ import re
 
 import helpers
 import config
-import getHog
+import svmTrain
 
 #--------------------SVM-Test------------------------
 def main():
@@ -25,13 +25,15 @@ def main():
 	
 	visualise = args["visualise"]
 
+	print("Testing single-scale images")
 	for imPath in glob.glob(os.path.join(config.testPath, "*")):
 		svmTest(imPath, visualise, isScale = False)
-	print("Done single scale")
+	print("Single-scale results saved to {}".format(config.resultPath))
 
+	print("Testing multi-scale images")
 	for imPath in glob.glob(os.path.join(config.testScalePath, "*")):
 		svmTest(imPath, visualise, isScale = True)
-	print("Done multi scale")
+	print("Multi-scale results saved to {}".format(config.resultScalePath))
 
 def svmTest(imPath, visualise, isScale):
 	# Read the input test image
@@ -39,7 +41,7 @@ def svmTest(imPath, visualise, isScale):
 	grey = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
 	# Get min window size from the train image (very important to have same size so that hog can work!)
-	minWindowSize = getHog.getTrainImageDimension()
+	minWindowSize = config.trainWindowSize
 	
 	# Load the model
 	model = joblib.load(config.modelPath)
@@ -68,11 +70,9 @@ def svmTest(imPath, visualise, isScale):
 	if (not isScale):
 		resultPath = os.path.join(config.resultPath, resultName)
 		cv2.imwrite(resultPath, image)
-		print("Single-scale results saved to {}".format(config.resultPath))
 	else:
 		resultPath = os.path.join(config.resultScalePath, resultName)
 		cv2.imwrite(resultPath, image)
-		print("Multi-scale results saved to {}".format(config.resultScalePath))
 
 def getBoxes(grey, minWindowSize, model, boxes, visualise):
 	# Loop over image pyramid (downscale)
@@ -92,8 +92,9 @@ def getBoxes(grey, minWindowSize, model, boxes, visualise):
 
 			# Get prediction (0:neg or 1:pos)
 			prediction = model.predict(features.reshape(1,-1))
-			
-			if (prediction == 1):
+			probability = model.predict_proba(features.reshape(1,-1))
+
+			if (prediction == 1 and probability[:,1] > config.posProbThreshold):
 				#print("Got something at (x, y) = ({}, {})".format(x,y))
 				rows, cols = window.shape
 				lowerRight_x = x + cols - 1

@@ -63,10 +63,10 @@ def getNonMaxSuppression_fast(boxes, overlapThreshold = 0.3):
 		# Compute the ratio of overlap -> return a 1-d array
 		overlap = (w * h) / area[idxs[:last_idx]]
 
-		# Get indices of values satisfying: > overlapThreshold
+		# Get indices of values > overlapThreshold (bad ones)
 		# Since overlap is a 1-d array, the return tuple has empty second element (ie no cols)
 		# => get the first element, ie array of row's indices of overlap
-		overlap_badIdxs = np.where(overlap >= overlapThreshold)[0]
+		overlap_badIdxs = np.where(overlap > overlapThreshold)[0]
 
 		# Since we already added last_idx to pick[], put it inside the to-be-deleted-array
 		del_tuple = ( [last_idx], overlap_badIdxs )
@@ -80,14 +80,14 @@ def getNonMaxSuppression_fast(boxes, overlapThreshold = 0.3):
 
 #----------------------------------------------------
 
-def getSlidingWindow(image, stepSize, windowSize = (30,100)):
+def getSlidingWindow(image, stepSize = (10,10), windowSize = (20,20)):
     '''
 	Get sliding window
 	Input:
 		1. image: Input Image
 		2. stepSize: Incremented Size of Window
 			Index (0, 1) for (y-direction step, x-direction step)
-		3. windowSize: Size of Sliding Window, default to (30,100)
+		3. windowSize: Size of Sliding Window, default to (20,20)
 			as: windowSize[0] = nrows = height, windowSize[1] = ncols = width
 
 	Output:
@@ -107,13 +107,13 @@ def getSlidingWindow(image, stepSize, windowSize = (30,100)):
 
 #----------------------------------------------------
 
-def getImagePyramid(image, scale = 1.5, minSize = (30,100)):
+def getImagePyramid(image, scale = 1.5, minSize = (20,20)):
 	'''
 	Build an image pyramid
 	Input:
 		1. image: Input image
 		2. scale: scaling factor, default to 1.5
-		3. minSize: minimum size threshold, default to (30,100)
+		3. minSize: minimum size threshold, default to (30,20)
 			as: minSize[0] = nrows = height, minSize[1] = ncols = width
 	Output:
 		yield a sequense of images (this is a generator)
