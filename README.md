@@ -31,3 +31,5 @@ To run the code:
 		4. pyramidMinSize: minimum image size after rescaling in image pyramid method
 		5. posProbThreshold: positive probability threshold for the object, only those positive detections that have a probability
 			larger than the parameter can be accepted 
+2. Run "python svmTrain.py"		==> train a model, expect ~180 seconds (~ 3 minutes) for the given CAR DATA
+3. Run "python svmTest.py"		==> test the model, expect ~165 seconds for both scaled and un-scaled testing images
