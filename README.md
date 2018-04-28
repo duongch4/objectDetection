@@ -14,17 +14,17 @@ Outline the steps to train and test:
 4. Apply hard-negative mining on negative training set to produce a hard-negative sample (ie. label false-positive detections as 0)
 5. Re-train model with hard-negative sample => attempt to reduce the number of false-positive detections
 6. Apply model to testing sets, and apply non-maximum suppression (NMS) technique to retain the most significant bounding boxes
-	a. Un-scaled testing set: good result
-	b. Scaled testing set: a lot of false positives
+	1. Un-scaled testing set: good result
+	2. Scaled testing set: a lot of false positives
 
 To run the code:
 1. Read the config.cfg file to have general ideas of free parameters
-	a. Should keep the trainWindowSize as is, or change very little.
+	1. Should keep the trainWindowSize as is, or change very little.
 		This is because the provided training images have dimension (height, width) = (40, 100), and object car is only smaller than
 		the image size by tiny bit. I chose the training window size to be (36, 96) so that there are rooms for hard-negative training
-	b. When changing the paths to training sets folder, test sets folder, model folder, and results folders, remember to change
+	2. When changing the paths to training sets folder, test sets folder, model folder, and results folders, remember to change
 		the paths accordingly inside config.cfg file
-	c. Mainly tweak the parameters:
+	3. Mainly tweak the parameters:
 		1. overlapThreshold: an area overlap threshold for NMS, over which we do not accept a bounding box
 		2. stepSize: a parameter for sliding window method
 		3. scale: re-scaling factor for the image pyramid method
