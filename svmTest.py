@@ -45,16 +45,17 @@ def svmTest(imPath, visualise, isScale):
 	grey = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
 	# Get min window size from the train image (very important to have same size so that hog can work!)
-	minWindowSize = config.trainWindowSize
+	trainWindowSize = config.trainWindowSize
 	
-	# Load the model
+	# Load the model and false-positive threshold
 	model = joblib.load(config.modelPath)
+	falsePositiveThreshold = joblib.load(config.falsePositiveThresholdPath)
 
 	# Initialise detections (bounding boxes)
 	boxes = []
 
 	# For each scale, for each sliding window, decide whether to add the window to boxes 
-	getBoxes(grey, minWindowSize, model, boxes, visualise)
+	getBoxes(grey, trainWindowSize, model, falsePositiveThreshold, boxes, visualise)
 
 	# NMS to get rid of overlapping boxes
 	getNMS(image, boxes, visualise)
@@ -62,15 +63,15 @@ def svmTest(imPath, visualise, isScale):
 	# Save result
 	saveResults(imPath, image, isScale)
 
-def getBoxes(grey, minWindowSize, model, boxes, visualise):
+def getBoxes(grey, trainWindowSize, model, falsePositiveThreshold, boxes, visualise):
 	# Loop over image pyramid (downscale)
 	for imResized in helpers.getImagePyramid(grey, config.scale, config.pyramidMinSize):
 		
 		# Loop over sliding window for each layer of the pyramid
-		for (x, y, window) in helpers.getSlidingWindow(imResized, config.stepSize, minWindowSize):
+		for (x, y, window) in helpers.getSlidingWindow(imResized, config.stepSize, trainWindowSize):
 			
 			# If window does not meet our desired minWindowSize, ignore it
-			if (window.shape[0] != minWindowSize[0] or window.shape[1] != minWindowSize[1]):
+			if (window.shape[0] != trainWindowSize[0] or window.shape[1] != trainWindowSize[1]):
 				continue
 
 			# Extract HOG features for each window
@@ -82,7 +83,7 @@ def getBoxes(grey, minWindowSize, model, boxes, visualise):
 			prediction = model.predict(features.reshape(1,-1))
 			probability = model.predict_proba(features.reshape(1,-1))
 
-			if (prediction == 1 and probability[:,1] > config.posProbThreshold):
+			if (prediction == 1 and probability[0,1] > falsePositiveThreshold):
 				#print("Got something at (x, y) = ({}, {})".format(x,y))
 				rows, cols = window.shape
 				lowerRight_x = x + cols - 1
