@@ -16,7 +16,6 @@ import time
 # Import own modules
 import config
 import helpers
-import getHog
 
 #--------------------Constant------------------------
 
@@ -32,14 +31,10 @@ def main():
 	# Argument Parser
 	parser = argparse.ArgumentParser()
 
-	#parser.add_argument("-p", "--posFeatPath", help = "Path to positive features from HOG", required = True)
-	#parser.add_argument("-n", "--negFeatPath", help = "Path to negative features from HOG", required = True)
 	parser.add_argument("-c", "--classifierType", help = "Classifier to be used", default = "LinSVM")
 
 	args = vars(parser.parse_args())
 
-	#posFeatPath = args["posFeatPath"]
-	#negFeatPath = args["negFeatPath"]
 	classifierType = args["classifierType"]
 
 	# Initialise empty arrays

@@ -11,25 +11,29 @@ import re
 
 import helpers
 import config
-import svmTrain
 
 #--------------------SVM-Test------------------------
 def main():
 	# Argument Parser
 	parser = argparse.ArgumentParser()
 
-	#parser.add_argument("-t", "--testpath", help = "Path to test images", required = True)
-	parser.add_argument("-v", "--visualise", help = "Visualise sliding window", action = "store_true")
+	parser.add_argument("-t", "--testpath", help = "Path to ONE test image")
 	
 	args = vars(parser.parse_args())
 	
-	visualise = args["visualise"]
+	oneImagePath = args["testpath"]
 
+	if (oneImagePath is None):
+		svmTestManyImages(visualise = False)
+	else:
+		svmTest(oneImagePath, visualise = True, isScale = False)
+
+def svmTestManyImages(visualise):
 	print("Testing single-scale images")
 	for imPath in glob.glob(os.path.join(config.testPath, "*")):
 		svmTest(imPath, visualise, isScale = False)
 	print("Single-scale results saved to {}".format(config.resultPath))
-
+	
 	print("Testing multi-scale images")
 	for imPath in glob.glob(os.path.join(config.testScalePath, "*")):
 		svmTest(imPath, visualise, isScale = True)
