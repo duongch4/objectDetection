@@ -53,13 +53,14 @@ def main():
 
 	# Train
 	if classifierType is "LinSVM":
-		print("Training a linear SVM Classifier...")
+		print("Training a (base) linear SVM Classifier...")
 		
 		model = CalibratedClassifierCV( LinearSVC() )
 		model.fit(featureList, labelList)
 		print("Done base training")
 
 		# Hard-negative mining
+		print("Start hard-negative mining...")
 		(model, falsePositiveThreshold) = hardNegMining(model, trainWindowSize, featureList, labelList)
 		print("Done hard-negative mining")
 
