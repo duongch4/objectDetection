@@ -4,8 +4,9 @@ Train a classifier to detect a specific object (binary response case) inside an 
 using Histogram of Oriented Gradients (HOG) features extraction, and linear support vector machine (SVM)
 
 ## To run the code:
-1. Run "python svmTrain.py"		==> train a model, expect 180 seconds (~ 3 minutes) for the given CAR DATA
-2. Run "python svmTest.py"		==> test the model, expect ~165 seconds for both scaled and un-scaled testing images
+1. Run "pip install -r requirements.txt"	==> install dependencies
+2. Run "python svmTrain.py"		==> train a model, expect 180 seconds (~ 3 minutes) for the given CAR DATA
+3. Run "python svmTest.py"		==> test the model, expect ~165 seconds for both scaled and un-scaled testing images
 
 ## Modify configuration for training:
 Read the config.cfg file to have general ideas of free parameters:
