@@ -60,16 +60,17 @@ def main():
 		print("Done base training")
 
 		# Hard-negative mining
-		print("Start hard-negative mining...")
-		(model, falsePositiveThreshold) = hardNegMining(model, trainWindowSize, featureList, labelList)
-		print("Done hard-negative mining")
+		if (conditionHardNegMining(trainWindowSize)):
+			print("Start hard-negative mining...")
+			(model, falsePositiveThreshold) = hardNegMining(model, trainWindowSize, featureList, labelList)
+			print("Done hard-negative mining")
+			joblib.dump(falsePositiveThreshold, config.falsePositiveThresholdPath)
 
 		# Create feature directories if not exist
 		if not os.path.isdir(os.path.split(config.modelPath)[0]):
 			os.makedirs(os.path.split(config.modelPath)[0])
 		
 		joblib.dump(model, config.modelPath)
-		joblib.dump(falsePositiveThreshold, config.falsePositiveThresholdPath)
 		print("Classifier saved to {}".format(config.modelPath))
 
 def setFeatureLabel(samplePath, trainWindowSize, featureList, labelList, label):
@@ -85,6 +86,10 @@ def setFeatureLabel(samplePath, trainWindowSize, featureList, labelList, label):
 					           transform_sqrt = config.transform_sqrt)
 				featureList.append(features)
 				labelList.append(label)
+
+def conditionHardNegMining(trainWindowSize): 
+	return ( (trainWindowSize[0] < getTrainImageDimension()[0]) and
+	         (trainWindowSize[1] < getTrainImageDimension()[1]) )
 
 def hardNegMining(model, trainWindowSize, featureList, labelList):
 	for imPath in glob.glob(os.path.join(config.negTrainPath, "*")):
