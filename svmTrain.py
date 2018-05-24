@@ -64,12 +64,14 @@ def main():
 			print("Start hard-negative mining...")
 			(model, falsePositiveThreshold) = hardNegMining(model, trainWindowSize, featureList, labelList)
 			print("Done hard-negative mining")
-			joblib.dump(falsePositiveThreshold, config.falsePositiveThresholdPath)
-
+		else:
+			falsePositiveThreshold = config.posProbThreshold
+		
 		# Create feature directories if not exist
 		if not os.path.isdir(os.path.split(config.modelPath)[0]):
 			os.makedirs(os.path.split(config.modelPath)[0])
 		
+		joblib.dump(falsePositiveThreshold, config.falsePositiveThresholdPath)
 		joblib.dump(model, config.modelPath)
 		print("Classifier saved to {}".format(config.modelPath))
 
